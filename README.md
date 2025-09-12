@@ -1,6 +1,4 @@
-Here is a `README.md` file for your project:
-
-```markdown
+ 
 # PokeAPI Flutter Application
 
 This project is a Flutter-based application that utilizes the PokeAPI to display a list of Pokémon, their details, and statistics. The app is designed with clean architecture principles, Bloc state management, and infinite scrolling for seamless user experience.
@@ -21,9 +19,7 @@ This project is a Flutter-based application that utilizes the PokeAPI to display
 
 ### Languages and Frameworks:
 - **Dart**: Primary language for Flutter development.
-- **Flutter**: Framework for building the UI.
-- **Kotlin/Java**: For Android-specific configurations.
-- **Gradle**: Build system for Android.
+- **Flutter**: Framework for building the UI. 
 
 ### Libraries and Tools:
 - **Flutter Bloc**: State management solution.
@@ -37,7 +33,7 @@ This project is a Flutter-based application that utilizes the PokeAPI to display
 ## Project Structure
 
 The project follows clean architecture principles with the following structure:
-
+ 
 ```
 lib/
 ├── features/
@@ -53,8 +49,6 @@ lib/
 │   │   │   ├── widgets/         # Reusable UI components
 ├── utils/                       # Utility classes (e.g., colors, text styles)
 ```
-
----
 
 ## Installation and Setup
 
@@ -110,7 +104,7 @@ This app uses the [PokeAPI](https://pokeapi.co/) to fetch Pokémon data.
 
 | Home Screen | Pokémon Details |
 |-------------|-----------------|
-| ![Home](https://via.placeholder.com/150) | ![Details](https://via.placeholder.com/150) |
+| ![Home](https://github.com/IzraelAA/poke_api/blob/b68fbb6c647200001c6f8e909a6e3141762f05dd/images/home.png) | ![Details](https://github.com/IzraelAA/poke_api/blob/b68fbb6c647200001c6f8e909a6e3141762f05dd/images/detail.png) |
 
 ---
 
