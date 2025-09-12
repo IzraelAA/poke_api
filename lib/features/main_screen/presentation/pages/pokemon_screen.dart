@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:poke_api/features/main_screen/data/models/pokemon_detail_model.dart';
 import 'package:poke_api/features/main_screen/presentation/widgets/about_pokemon_widget.dart';
-import 'package:poke_api/features/main_screen/presentation/widgets/basestats_widget.dart';
+import 'package:poke_api/features/main_screen/presentation/widgets/base_stats_widget.dart';
 import 'package:poke_api/utils/app_color.dart';
 import 'package:poke_api/utils/app_text_style.dart';
 
