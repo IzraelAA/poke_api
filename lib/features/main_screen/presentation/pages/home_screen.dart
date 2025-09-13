@@ -24,9 +24,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200 &&
+            _scrollController.position.maxScrollExtent - 200 &&
         !_scrollController.position.outOfRange) {
-      context.read<PokemonCubit>().getMorePokemon();
+      if (context.read<PokemonCubit>().state is PokemonLoaded &&
+          (context.read<PokemonCubit>().state as PokemonLoaded).loadingMore ==
+              false) {
+        context.read<PokemonCubit>().getMorePokemon();
+      }
     }
   }
 
@@ -58,37 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
           } else if (state is PokemonLoaded) {
             return Column(
               children: [
-                Expanded(
-                  child: GridView.count(
-                    padding: const EdgeInsets.all(20),
-                    controller: _scrollController,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.4,
-                    children: state.pokemonsDetail
-                        .map(
-                          (pokemon) => PokemonWidget(
-                        pokemon: pokemon,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  PokemonScreen(pokemon: pokemon),
-                            ),
-                          );
-                        },
-                      ),
-                    )
-                        .toList(),
-                  ),
-                ),
-                if (state.loadingMore)
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: CircularProgressIndicator(),
-                  ),
+                Expanded(child: bodyOrientation(state)),
               ],
             );
           } else if (state is PokemonError) {
@@ -105,6 +79,42 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
       ),
+    );
+  }
+
+  Widget bodyOrientation(PokemonLoaded state) {
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        int crossAxisCount = orientation == Orientation.portrait ? 2 : 4;
+        return GridView.count(
+          padding: const EdgeInsets.all(20),
+          controller: _scrollController,
+          crossAxisSpacing: 15,
+          mainAxisSpacing: 15,
+          crossAxisCount: crossAxisCount,
+          childAspectRatio: 1.4,
+          children: [
+            ...state.pokemonsDetail.map(
+              (pokemon) => PokemonWidget(
+                pokemon: pokemon,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PokemonScreen(pokemon: pokemon),
+                    ),
+                  );
+                },
+              ),
+            ),
+            if (state.loadingMore)
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: CircularProgressIndicator(),
+              ),
+          ],
+        );
+      },
     );
   }
 }

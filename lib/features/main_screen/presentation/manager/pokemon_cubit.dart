@@ -99,6 +99,7 @@ class PokemonCubit extends Cubit<PokemonState> {
   bool _isLoadingMore = false; // Prevent multiple API calls
 
   Future<void> getPokemon() async {
+    _isLoadingMore = true;
     try {
       emit(PokemonLoading());
       print("Fetching Pokémon list...");
@@ -109,39 +110,14 @@ class PokemonCubit extends Cubit<PokemonState> {
         (pokemons) async {
           _pokemons = pokemons;
 
-          for (var result in _pokemons.results!) {
-            await _fetchPokemonDetail(result.url!, false);
-          }
+          for (var i = 0; i < _pokemons.results!.length; i++) {
+            await _fetchPokemonDetail(_pokemons.results![i].url!);
 
-          emit(PokemonLoaded(
-              pokemons: _pokemons, pokemonsDetail: _pokemonsDetail));
-        },
-      );
-    } catch (e) {
-      emit(PokemonError(message: e.toString()));
-    }
-  }
-
-  Future<void> getMorePokemon() async {
-    if (_isLoadingMore || _pokemons.next == null) {
-      return; // Prevent duplicate calls
-    }
-    _isLoadingMore = true;
-
-    try {
-      final result = await getPokemonListUseCase.call(
-        limit: '20',
-        offset: (_pokemons.results?.length ?? 0).toString(),
-      );
-
-
-      result.fold(
-        (failure) => emit(PokemonError(message: failure.message)),
-        (pokemons) async {
-          _pokemons.results?.addAll(pokemons.results??[]);
-
-          for (var result in pokemons.results!) {
-            await _fetchPokemonDetail(result.url!, true);
+            // Emit PokemonLoaded every 10 iterations
+            if ((i + 1) % 10 == 0) {
+              emit(PokemonLoaded(
+                  pokemons: _pokemons, pokemonsDetail: _pokemonsDetail));
+            }
           }
 
           emit(PokemonLoaded(
@@ -155,18 +131,65 @@ class PokemonCubit extends Cubit<PokemonState> {
     }
   }
 
-  Future<void> _fetchPokemonDetail(String url, bool isMore) async {
+  Future<void> getMorePokemon() async {
+    if (!_isLoadingMore && _pokemons.next != null) {
+      print("isLoadingMore: $_isLoadingMore");
+      _isLoadingMore = true;
+      try {
+        final result = await getPokemonListUseCase.call(
+          limit: '20',
+          offset: (_pokemons.results?.length ?? 0).toString(),
+        );
+
+        result.fold(
+          (failure) => emit(PokemonError(message: failure.message)),
+          (pokemons) async {
+            List<Result?> loadPokemon = [];
+            pokemons.next = pokemons.next;
+            pokemons.results?.forEach((element) {
+              if(!_pokemons.results!.any((e) => e.name == element.name)) {
+                _pokemons.results!.add(element);
+                loadPokemon.add(element);
+              }
+            });
+
+            emit(PokemonLoaded(
+                pokemons: _pokemons,
+                pokemonsDetail: _pokemonsDetail,
+                loadingMore: true));
+            for (var i = 0; i < loadPokemon.length; i++) {
+
+              await _fetchPokemonDetail(loadPokemon[i]!.url!);
+
+              // Emit PokemonLoaded every 10 iterations
+              if ((i + 1) % 10 == 0) {
+                emit(PokemonLoaded(
+                    pokemons: _pokemons,
+                    pokemonsDetail: _pokemonsDetail,
+                    loadingMore: true));
+              }
+            }
+
+            emit(PokemonLoaded(
+                pokemons: _pokemons, pokemonsDetail: _pokemonsDetail));
+          },
+        );
+      } catch (e) {
+        emit(PokemonError(message: e.toString()));
+      } finally {
+        _isLoadingMore = false;
+      }
+    }
+  }
+
+  Future<void> _fetchPokemonDetail(String url) async {
     final result = await getPokemonDetailUseCase(url);
 
     result.fold(
         (failure) =>
             debugPrint('Failed to fetch Pokémon detail: ${failure.message}'),
         (pokemonDetail) {
-              _pokemonsDetail.add(pokemonDetail);
-            return  emit(PokemonLoaded(
-                  pokemons: _pokemons,
-                  pokemonsDetail: _pokemonsDetail,
-                  loadingMore: isMore));
-            });
+      _pokemonsDetail.add(pokemonDetail);
+    });
   }
 }

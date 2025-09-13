@@ -40,117 +40,156 @@ class _PokemonScreenState extends State<PokemonScreen>
         ),
         centerTitle: true,
       ),
-      body: Stack(
-        children: [
-          Column(
+      body: OrientationBuilder(builder: (context, orientation) {
+        if (orientation == Orientation.portrait) {
+          return verticalBody();
+        } else {
+          return horizontalBody();
+        }
+      }),
+    );
+  }
+
+  Widget verticalBody() {
+    return Stack(
+      children: [
+        Column(
+          children: [
+            SizedBox(height: 250, child: headerPokemon()),
+            Expanded(child: bodyPokemon()),
+          ],
+        ),
+        Positioned(
+          left: MediaQuery.of(context).size.width * 0.25,
+          top: MediaQuery.of(context).size.width * 0.25,
+          child: SizedBox(
+            height: 200,
+            width: 200,
+            child: imagePokemon(),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget horizontalBody() {
+    return Row(
+      children: [
+        Expanded(
+          child: Stack(
             children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                height: 250,
-                width: double.infinity,
-                color: AppColor()
-                    .getBackGroundColor(widget.pokemon.types!.first.type!.name!),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.pokemon.name!,
-                      style: AppTextStyle.pokemonHeader(color: Colors.white),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: widget.pokemon.types!
-                          .map(
-                            (e) => Container(
-                              margin: const EdgeInsets.only(right: 10),
-                              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                              decoration: BoxDecoration(
-                                color: AppColor().getBackGroundColor2(
-                                  widget.pokemon.types!.first.type!.name!,
-                                ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                e.type!.name!,
-                                style: AppTextStyle.pokemonBody(
-                                    color: Colors.black),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  color: AppColor()
-                      .getBackGroundColor(widget.pokemon.types![0].type!.name!),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(30),
-                        topLeft: Radius.circular(30),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                              top: 30, left: 20, right: 20),
-                          child: TabBar(
-                            labelPadding: const EdgeInsets.all(10),
-                            indicatorColor: AppColor().getBackGroundColor(
-                                widget.pokemon.types![0].type!.name!),
-                            labelColor: Colors.black,
-                            unselectedLabelColor: Colors.grey,
-                            controller: _tabController,
-                            tabs: [
-                              Text(
-                                'About',
-                                style: AppTextStyle.pokemonBody(
-                                    color: Colors.black),
-                              ),
-                              Text(
-                                'Base Stats',
-                                style: AppTextStyle.pokemonBody(
-                                    color: Colors.black),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            child: TabBarView(
-                              controller: _tabController,
-                              children: [
-                                AboutPokemonWidget(pokemon: widget.pokemon),
-                                BaseStatsWidget(pokemon: widget.pokemon),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+              headerPokemon(),
+              Positioned(
+                right: 20,
+                top: 20,
+                child: SizedBox(
+                  height: 300,
+                  width: 300,
+                  child: imagePokemon(),
                 ),
               ),
             ],
           ),
-          Positioned(
-            left: MediaQuery.of(context).size.width * 0.25,
-            top: MediaQuery.of(context).size.width * 0.25,
-            child: SizedBox(
-              height: 200,
-              width: 200,
-              child: Image.network(widget
-                  .pokemon.sprites!.other!.officialArtwork!.frontDefault!),
-            ),
-          )
+        ),
+        Expanded(child: bodyPokemon()),
+      ],
+    );
+  }
+
+  Widget headerPokemon() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      width: double.infinity,
+      color: AppColor()
+          .getBackGroundColor(widget.pokemon.types!.first.type!.name!),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.pokemon.name!,
+            style: AppTextStyle.pokemonHeader(color: Colors.white),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: widget.pokemon.types!
+                .map(
+                  (e) => Container(
+                    margin: const EdgeInsets.only(right: 10),
+                    padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    decoration: BoxDecoration(
+                      color: AppColor().getBackGroundColor2(
+                        widget.pokemon.types!.first.type!.name!,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      e.type!.name!,
+                      style: AppTextStyle.pokemonBody(color: Colors.black),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget imagePokemon() {
+    return Image.network(
+        widget.pokemon.sprites!.other!.officialArtwork!.frontDefault!);
+  }
+
+  Widget bodyPokemon() {
+    return Container(
+      color:
+          AppColor().getBackGroundColor(widget.pokemon.types![0].type!.name!),
+      child: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(30),
+            topLeft: Radius.circular(30),
+          ),
+        ),
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 30, left: 20, right: 20),
+              child: TabBar(
+                labelPadding: const EdgeInsets.all(10),
+                indicatorColor: AppColor()
+                    .getBackGroundColor(widget.pokemon.types![0].type!.name!),
+                labelColor: Colors.black,
+                unselectedLabelColor: Colors.grey,
+                controller: _tabController,
+                tabs: [
+                  Text(
+                    'About',
+                    style: AppTextStyle.pokemonBody(color: Colors.black),
+                  ),
+                  Text(
+                    'Base Stats',
+                    style: AppTextStyle.pokemonBody(color: Colors.black),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    AboutPokemonWidget(pokemon: widget.pokemon),
+                    BaseStatsWidget(pokemon: widget.pokemon),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
