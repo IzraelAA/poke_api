@@ -105,6 +105,8 @@ This app uses the [PokeAPI](https://pokeapi.co/) to fetch Pokémon data.
 | Home Screen | Pokémon Details |
 |-------------|-----------------|
 | ![Home](https://github.com/IzraelAA/poke_api/blob/b68fbb6c647200001c6f8e909a6e3141762f05dd/images/home.png) | ![Details](https://github.com/IzraelAA/poke_api/blob/b68fbb6c647200001c6f8e909a6e3141762f05dd/images/detail.png) |
+| ![Home](https://github.com/IzraelAA/poke_api/blob/cfab3d6f441028db8685eb1f62d47b4abae66821/images/home_horizontal.png) | ![Details](https://github.com/IzraelAA/poke_api/blob/cfab3d6f441028db8685eb1f62d47b4abae66821/images/detail_horizontal.png) |
+
 
 ---
 
